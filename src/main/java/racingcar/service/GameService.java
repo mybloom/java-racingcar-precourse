@@ -8,22 +8,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import racingcar.domain.Car;
+import racingcar.domain.Racing;
 import racingcar.utils.Validator;
 import racingcar.view.RequestView;
+import racingcar.view.dto.InputDto;
 
 //도메인 간 순서 보장 : 흐름제어
 //요청 처리하는 부분 Class로 빼도 좋을지 생각해보자
 public class GameService {
 	private RequestView requestView = new RequestView();
-	Map<String, Object> map = new HashMap<>();
+	InputDto inputDto = new InputDto();
+	List<Car> racingCars;
+	Racing racing;
 
 	//입력값 validate체크
 	public void createRacingCars() {
 		validateRequest();
+		racingCars = new ArrayList<>();
+		for (String name : inputDto.getRacingCars()) {
+			racingCars.add(new Car(name));
+		}
 
+		racing = new Racing(racingCars, inputDto.getRacingCount());
 	}
 
-	private Map<String, Object> validateRequest() {
+	private void validateRequest() {
 		String carName = "";
 		String racingCount = "";
 		List<String> list = null;
@@ -34,7 +44,7 @@ public class GameService {
 		while (isNotValidCarName) {
 			carName = requestView.requestCarName();
 			String[] array = carName.split(",");
-			list =  new ArrayList<>(Arrays.asList(array));
+			list = new ArrayList<>(Arrays.asList(array));
 
 			isNotValidCarName = validateCarName(list);
 		}
@@ -44,9 +54,8 @@ public class GameService {
 			isNotValidRacingCount = validateRacingCount(racingCount);
 		}
 
-		map.put("CAR_NAME", list);
-		map.put("RACING_COUNT", Integer.parseInt(racingCount));
-		return map;
+		inputDto.setRacingCars(list);
+		inputDto.setRacingCount(Integer.parseInt(racingCount));
 	}
 
 	//자동차이름에 대한 처리.
