@@ -33,6 +33,10 @@ public class GameService {
 		racing = new Racing(racingCars, inputDto.getRacingCount());
 	}
 
+	public void startRacing() {
+		racing.createSpeed();
+	}
+
 	private void validateRequest() {
 		String carName = "";
 		String racingCount = "";
